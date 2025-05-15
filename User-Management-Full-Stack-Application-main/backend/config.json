@@ -1,0 +1,78 @@
+{
+  "development": {
+    "database": {
+      "dialect": "mysql",
+      "host": "153.92.15.31",
+      "port": 3306,
+      "username": "u875409848_ravanes",
+      "password": "9T2Z5$3UKkgSYzE",
+      "database": "u875409848_ravanes",
+      "timezone": "+00:00",
+      "define": {
+        "freezeTableName": false,
+        "timestamps": true,
+        "createdAt": "created",
+        "updatedAt": "updated"
+      },
+      "dialectOptions": {
+        "connectTimeout": 60000
+      }
+    },
+    "secret": "STARTTLS_DEV_SECRET",
+    "emailFrom": "ravanesxd@gmail.com",
+    "smtpOptions": {
+      "host": "smtp.gmail.com",
+      "port": 587,
+      "secure": false,
+      "auth": {
+        "user": "ravanesxd@gmail.com",
+        "pass": "fqudghrfmudigzvd"
+      },
+      "tls": {
+        "rejectUnauthorized": false
+      },
+      "debug": true,
+      "logger": true,
+      "disableFileAccess": true,
+      "disableUrlAccess": true
+    }
+  },
+  "production": {
+    "database": {
+      "dialect": "mysql",
+      "host": "153.92.15.31",
+      "port": 3306,
+      "username": "u875409848_ravanes",
+      "password": "9T2Z5$3UKkgSYzE",
+      "database": "u875409848_ravanes",
+      "timezone": "+00:00",
+      "define": {
+        "freezeTableName": false,
+        "timestamps": true,
+        "createdAt": "created",
+        "updatedAt": "updated"
+      },
+      "dialectOptions": {
+        "connectTimeout": 60000
+      }
+    },
+    "secret": "STARTTLS",
+    "emailFrom": "ravanesxd@gmail.com",
+    "smtpOptions": {
+      "host": "smtp.gmail.com",
+      "port": 587,
+      "secure": false,
+      "auth": {
+        "user": "ravanesxd@gmail.com",
+        "pass": "fqudghrfmudigzvd"
+      },
+      "tls": {
+        "rejectUnauthorized": false
+      },
+      "debug": true,
+      "logger": true,
+      "disableFileAccess": true,
+      "disableUrlAccess": true
+    }
+  }
+}
