@@ -24,7 +24,7 @@ const allowedOrigins = [
     'https://user-management-full-stack-application-frontend.onrender.com',
     'https://user-management-full-stack-application-zeta.vercel.app',
     'https://user-management-full-stack-application.vercel.app',
-    'https://user-management-full-stack-8kpn-i3o38mooc.vercel.app' // ✅ ADD THIS
+    'https://user-management-full-stack-8kpn-6q59mcdys.vercel.app' // ✅ ADD THIS
 ];
 
 // Parse JSON and URL-encoded data
