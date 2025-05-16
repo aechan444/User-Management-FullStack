@@ -30,3 +30,5 @@ export const environment = {
                 : 'Other',
     useFakeBackend: false
 };
+
+// Confirmed connection to correct backend - updated manually
