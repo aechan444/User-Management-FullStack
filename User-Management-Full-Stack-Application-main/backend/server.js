@@ -1,5 +1,3 @@
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 require('rootpath')();
 require('dotenv').config();
 const express = require('express');
@@ -10,8 +8,6 @@ const cors = require('cors');
 const errorHandler = require('./_middleware/error_handler');
 const http = require('http');
 const db = require('./_helpers/db');
-const swaggerUi = require('swagger-ui-express');
-const swaggerOptions = require('./swagger-options');
 
 // Environment detection
 const isProduction = process.env.NODE_ENV === 'production';
@@ -23,13 +19,12 @@ const allowedOrigins = [
     'https://user-management-full-stack-application.onrender.com',
     'https://user-management-full-stack-application-frontend.onrender.com',
     'https://user-management-full-stack-application-zeta.vercel.app',
-    'https://user-management-full-stack-application.vercel.app',
-    'https://user-management-full-stack-8kpn-brmh4uukc.vercel.app' // ✅ ADD THIS
+    'https://user-management-full-stack-application.vercel.app'
 ];
 
 // Parse JSON and URL-encoded data
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(cookieParser());
 
 // CORS configuration
@@ -39,35 +34,30 @@ app.use((req, res, next) => {
     next();
 });
 
-// Updated CORS configuration
-const corsOptionsDelegate = function (req, callback) {
-    const origin = req.header('Origin');
-    console.log('CORS Request Origin:', origin);
-
-    const isAllowed = origin &&
-        (
-            allowedOrigins.includes(origin) ||
-            origin.endsWith('.vercel.app') ||
-            origin.endsWith('.onrender.com')
-        );
-
-    callback(null, {
-        origin: isAllowed,
-        credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-    });
-};
-
-app.use(cors(corsOptionsDelegate));
-
+app.use(cors({
+    origin: function(origin, callback) {
+        // Allow requests with no origin (like mobile apps, curl, etc)
+        if (!origin) return callback(null, true);
+        
+        // Check if the origin is allowed
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.log(`CORS blocked request from: ${origin}`);
+            callback(new Error('Not allowed by CORS'), false);
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 
 // Add additional headers to handle preflight requests
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Credentials', 'true');
     
     const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin) || (origin && (origin.endsWith('.onrender.com') || origin.endsWith('.vercel.app')))) {
+    if (allowedOrigins.includes(origin)) {
         res.header('Access-Control-Allow-Origin', origin);
     }
     
@@ -177,6 +167,20 @@ try {
             } catch (err) { next(err); }
         });
         
+        // UPDATE entire workflow
+        workflowsRouter.put('/:id', authorize(), async (req, res, next) => {
+            try {
+                const workflow = await db.Workflow.findByPk(req.params.id);
+                if (!workflow) throw new Error('Workflow not found');
+                
+                // Update workflow preserving the ID and created date
+                const { id, created, ...updateData } = req.body;
+                await workflow.update(updateData);
+                
+                res.json(workflow);
+            } catch (err) { next(err); }
+        });
+        
         app.use('/workflows', workflowsRouter);
         console.log('Created default workflows controller');
     }
@@ -185,17 +189,10 @@ try {
     process.exit(1);
 }
 
-// Add a simple public test endpoint for connectivity testing
-app.get('/public-test', (req, res) => {
-    res.json({
-        status: 'success',
-        message: 'API is working properly',
-        timestamp: new Date().toISOString()
-    });
+// Swagger docs route - disabled to avoid path-to-regexp errors
+app.use('/api-docs', (req, res) => {
+    res.status(503).send('API Documentation temporarily unavailable due to path-to-regexp issues');
 });
-
-// Swagger docs route
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(null, swaggerOptions));
 
 // Global error handler
 app.use(errorHandler);
