@@ -38,23 +38,28 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(cors({
-    origin: function(origin, callback) {
-        // Allow requests with no origin (like mobile apps, curl, etc)
-        if (!origin) return callback(null, true);
-        
-        // Check if the origin is allowed
-        if (allowedOrigins.includes(origin) || origin.endsWith('.onrender.com') || origin.endsWith('.vercel.app')) {
-            callback(null, true);
-        } else {
-            console.log(`CORS blocked request from: ${origin}`);
-            callback(new Error('Not allowed by CORS'), false);
-        }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
+// Updated CORS configuration
+const corsOptionsDelegate = function (req, callback) {
+    const origin = req.header('Origin');
+    console.log('CORS Request Origin:', origin);
+
+    const isAllowed = origin &&
+        (
+            allowedOrigins.includes(origin) ||
+            origin.endsWith('.vercel.app') ||
+            origin.endsWith('.onrender.com')
+        );
+
+    callback(null, {
+        origin: isAllowed,
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+    });
+};
+
+app.use(cors(corsOptionsDelegate));
+
 
 // Add additional headers to handle preflight requests
 app.use((req, res, next) => {
