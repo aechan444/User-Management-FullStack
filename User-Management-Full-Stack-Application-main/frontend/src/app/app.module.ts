@@ -5,6 +5,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { JwtInterceptor, ErrorInterceptor } from './_helpers';
+import { fakeBackendProvider } from './_helpers/fake-backend';
 import { AppComponent } from './app.component';
 import { AlertComponent } from './_components';
 import { HomeComponent } from './home';
@@ -34,7 +35,8 @@ import { WorkflowsModule } from './workflows/workflows.module';
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-        // The fake backend provider is removed to use the real backend
+        //if want use real backend hash the "fakeBackendProvider" line
+        //fakeBackendProvider
     ],
     bootstrap: [AppComponent]
 })
