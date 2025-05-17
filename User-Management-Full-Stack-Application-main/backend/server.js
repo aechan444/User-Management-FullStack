@@ -1,7 +1,7 @@
 require('rootpath')();
 require('dotenv').config();
 const express = require('express');
-const app = express();
+const app = express(); // ✅ Initialize app
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
@@ -12,23 +12,7 @@ const db = require('./_helpers/db');
 const isProduction = process.env.NODE_ENV === 'production';
 const port = isProduction ? (process.env.PORT || 80) : 4000;
 
-const allowedOrigins = [
-    'http://localhost:4200',
-    'http://localhost:3000',
-    'http://127.0.0.1:4200',
-    'https://user-management-full-stack-application.onrender.com',
-    'https://user-management-full-stack-application-frontend.onrender.com',
-    'https://user-management-full-stack-application-zeta.vercel.app',
-    'https://user-management-full-stack-application.vercel.app',
-    'https://user-management-full-stack-8kpn-brmh4uukc.vercel.app'
-];
-
-// Middleware
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(cookieParser());
-
-
+// ✅ PLACE CORS MIDDLEWARE HERE - BEFORE bodyParser and routes
 const corsOptions = {
     origin: function(origin, callback) {
         console.log('CORS request from origin:', origin);
@@ -52,10 +36,14 @@ app.use((req, res, next) => {
     next();
 });
 
-
 app.options('*', (req, res) => res.sendStatus(200));
 
-// Routes
+// ✅ NOW continue with other middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(cookieParser());
+
+// ✅ ROUTES
 app.use('/accounts', require('./accounts/accounts.controller'));
 app.use('/employees', require('./employees/index'));
 app.use('/departments', require('./departments/index'));
