@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-// Improved CORS with dynamic origin matching
+
 const corsOptions = {
     origin: function(origin, callback) {
         console.log('CORS request from origin:', origin);
