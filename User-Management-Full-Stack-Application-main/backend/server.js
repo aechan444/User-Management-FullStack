@@ -31,30 +31,19 @@ app.use(cookieParser());
 // Improved CORS with dynamic origin matching
 const corsOptions = {
     origin: function(origin, callback) {
-        if (
-            !origin ||
-            allowedOrigins.includes(origin) ||
-            origin.endsWith('.vercel.app') ||
-            origin.endsWith('.onrender.com')
-        ) {
-            callback(null, true);
-        } else {
-            console.log('Blocked by CORS:', origin);
-            callback(new Error('Not allowed by CORS'));
-        }
+        console.log('CORS request from origin:', origin);
+        callback(null, true); // Allow all origins
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
+
 app.use(cors(corsOptions));
 
 app.use((req, res, next) => {
     const origin = req.headers.origin;
-    if (
-        allowedOrigins.includes(origin) ||
-        (origin && (origin.endsWith('.vercel.app') || origin.endsWith('.onrender.com')))
-    ) {
+    if (origin) {
         res.setHeader('Access-Control-Allow-Origin', origin);
     }
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -62,6 +51,7 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     next();
 });
+
 
 app.options('*', (req, res) => res.sendStatus(200));
 
